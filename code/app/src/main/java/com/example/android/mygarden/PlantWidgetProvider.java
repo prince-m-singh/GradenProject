@@ -21,25 +21,38 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.widget.RemoteViews;
 
+import com.example.android.mygarden.provider.PlantContract;
 import com.example.android.mygarden.ui.MainActivity;
+import com.example.android.mygarden.ui.PlantDetailActivity;
 
 public class PlantWidgetProvider extends AppWidgetProvider {
-    // TODO (1): Modify updateAppWidget method to take an image recourse and call
+    //  Modify updateAppWidget method to take an image recourse and call
     // setImageViewResource to update the widget’s image
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
-                                int imgRes,int appWidgetId) {
+                                int imgRes, long plantId, boolean showWater, int appWidgetId) {
+        // TODO (3): Set the click handler to open the DetailActivity for plant ID,
+        // or the MainActivity if plant ID is invalid
 
         // Create an Intent to launch MainActivity when clicked
-        Intent intent = new Intent(context, MainActivity.class);
+        Intent intent;
+        if (plantId == PlantContract.INVALID_PLANT_ID) {
+            intent = new Intent(context, MainActivity.class);
+        } else { // Set on click to open the corresponding detail activity
+            Log.d(PlantWidgetProvider.class.getSimpleName(), "plantId=" + plantId);
+            intent = new Intent(context, PlantDetailActivity.class);
+            intent.putExtra(PlantDetailActivity.EXTRA_PLANT_ID, plantId);
+        }
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
-
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.plant_widget);
         // Update image
         views.setImageViewResource(R.id.widget_plant_image, imgRes);
+        // Update plant ID text
+        views.setTextViewText(R.id.widget_plant_name, String.valueOf(plantId));
 
         // Widgets allow click handlers to only launch pending intents
         views.setOnClickPendingIntent(R.id.widget_plant_image, pendingIntent);
@@ -54,16 +67,19 @@ public class PlantWidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-        // TODO (2): Move the updateAppWidget loop to a new method called updatePlantWidgets and pass through the image recourse
+        //  Move the updateAppWidget loop to a new method called updatePlantWidgets and pass through the image recourse
         // There may be multiple widgets active, so update all of them
         //Start the intent service update widget action, the service takes care of updating the widgets UI
         PlantWateringService.startActionUpdatePlantWidgets(context);
-        // TODO (4): Call startActionUpdatePlantWidgets in onUpdate as well as in AddPlantActivity and PlantDetailActivity (add and delete plants)
+        //  Call startActionUpdatePlantWidgets in onUpdate as well as in AddPlantActivity and PlantDetailActivity (add and delete plants)
     }
+    // TODO (2): Modify updatePlantWidgets and updateAppWidget to pass the plant ID as well as a boolean
+    // to show/hide the water button
+
     public static void updatePlantWidgets(Context context, AppWidgetManager appWidgetManager,
-                                          int imgRes, int[] appWidgetIds) {
+                                          int imgRes, long plantId, boolean showWater, int[] appWidgetIds) {
         for (int appWidgetId : appWidgetIds) {
-            updateAppWidget(context, appWidgetManager, imgRes, appWidgetId);
+            updateAppWidget(context, appWidgetManager, imgRes, plantId, showWater, appWidgetId);
         }
     }
 
