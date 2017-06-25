@@ -34,7 +34,10 @@ public class PlantWidgetProvider extends AppWidgetProvider {
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int imgRes, long plantId, boolean showWater, int appWidgetId) {
-        // TODO (3): Set the click handler to open the DetailActivity for plant ID,
+        // TODO (4): separate the updateAppWidget logic into getGardenGridRemoteView and getSinglePlantRemoteView
+        // TODO (5): Use getAppWidgetOptions to get widget width and use the appropriate RemoteView method
+        // TODO (6): Set the PendingIntent template in getGardenGridRemoteView to launch PlantDetailActivity
+        //  Set the click handler to open the DetailActivity for plant ID,
         // or the MainActivity if plant ID is invalid
 
         // Create an Intent to launch MainActivity when clicked
@@ -73,7 +76,7 @@ public class PlantWidgetProvider extends AppWidgetProvider {
         PlantWateringService.startActionUpdatePlantWidgets(context);
         //  Call startActionUpdatePlantWidgets in onUpdate as well as in AddPlantActivity and PlantDetailActivity (add and delete plants)
     }
-    // TODO (2): Modify updatePlantWidgets and updateAppWidget to pass the plant ID as well as a boolean
+    //  Modify updatePlantWidgets and updateAppWidget to pass the plant ID as well as a boolean
     // to show/hide the water button
 
     public static void updatePlantWidgets(Context context, AppWidgetManager appWidgetManager,
